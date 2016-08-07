@@ -1,6 +1,6 @@
 # backup-docker-postgresql
 
-Backup from and restore to PostgreSQL databases that are running in Docker containers.
+Backup from and restore to remote PostgreSQL databases, which are (optionally) running in Docker containers.
  
 ## Backup with [backupdockerpostgresql](./backupdockerpostgresql)
 
@@ -52,3 +52,4 @@ Argument | Required |Description
 --- | --- | ---
 host | ✓ | The remote host to connect to
 backup_file | | The optional file from which to read the backup data. If not specified, then the backup data will be read from stdin
+
