@@ -37,3 +37,4 @@ if ${kill_connections}; then
 fi
 
 ${ssh_command} "${docker_command} ${pg_dumpall_command}|gzip" > ${backup_file}
+
