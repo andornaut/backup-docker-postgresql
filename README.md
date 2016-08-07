@@ -1,13 +1,19 @@
 # backup-docker-postgresql
 
 Backup from and restore to PostgreSQL databases that are running in Docker containers.
-
-## Instructions
  
-### Backup with [backupdockerpostgresql](./backupdockerpostgresql)
+## Backup with [backupdockerpostgresql](./backupdockerpostgresql)
+
+### Example
 
 ```
-./backupdockerpostgresql [--kill] [--help] host container [backup_file]
+$ ./backupdockerpostgresql --kill user@example.com postgres backup.gz
+```
+
+### Usage
+
+```
+backupdockerpostgresql [--kill] [--help] host container [backup_file]
 ```
 
 | Flag | Description |
@@ -22,10 +28,17 @@ Backup from and restore to PostgreSQL databases that are running in Docker conta
 | backup_file | | The optional file to which to save the backup data. If not specified, then the backup data will be written to stdout |
 
 
-### Restore with [restoredockerpostgresql](./restoredockerpostgresql)
+## Restore with [restoredockerpostgresql](./restoredockerpostgresql)
+
+### Example
 
 ```
-./restoredockerpostgresql [--drop] [--kill] [--help] host container [backup_file]
+$ ./restoredockerpostgresql --kill user@example.com postgres backup.gz
+```
+
+### Usage
+```
+restoredockerpostgresql [--drop] [--kill] [--help] host container [backup_file]
 ```
 
 | Flag | Description |
@@ -39,4 +52,3 @@ Backup from and restore to PostgreSQL databases that are running in Docker conta
 | host | ✓ | The remote host to connect to |
 | container | ✓ | The id or name of the Docker container in which PostgreSQL is running |
 | backup_file | | The optional file from which to read the backup data. If not specified, then the backup data will be read from stdin |
-
