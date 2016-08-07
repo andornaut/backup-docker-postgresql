@@ -7,13 +7,13 @@ Backup from and restore to remote PostgreSQL databases, which are (optionally) r
 ### Example
 
 ```
-$ ./backupdockerpostgresql --kill user@example.com postgres backup.gz
+$ ./backupdockerpostgresql --kill --container postgres user@example.com backup.gz
 ```
 
 ### Usage
 
 ```
-backupdockerpostgresql [--kill] [--help] host container [backup_file]
+backupdockerpostgresql [--kill] [--help] [--container <id>] host [backup_file]
 ```
 
 Flag | Argument | Description
@@ -33,12 +33,13 @@ backup_file | | The optional file to which to save the backup data. If not speci
 ### Example
 
 ```
-$ ./restoredockerpostgresql --kill user@example.com postgres backup.gz
+$ ./restoredockerpostgresql --kill --container 376064e2a45e user@example.com backup.gz
 ```
 
 ### Usage
+
 ```
-restoredockerpostgresql [--drop] [--kill] [--help] host container [backup_file]
+restoredockerpostgresql [--drop] [--kill] [--help] [--container <id>] host [backup_file]
 ```
 
 Flag | Argument | Description
