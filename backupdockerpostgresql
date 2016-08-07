@@ -25,7 +25,7 @@ done
 
 host=${1}
 container=${2}
-[[ $# == 3 ]] && backup_file="${3}" || backup_file="/dev/stdin"
+[[ $# == 3 ]] && backup_file="${3}" || backup_file="/dev/stdout"
 
 ssh_command="ssh ${host} -C"
 docker_command="sudo docker exec -i ${container}"
