@@ -16,16 +16,16 @@ $ ./backupdockerpostgresql --kill user@example.com postgres backup.gz
 backupdockerpostgresql [--kill] [--help] host container [backup_file]
 ```
 
-| Flag | Description |
-| --- | --- |
-| -k, --kill | Close all other database connections |
-| -h, --help | Print a help message and exit |
+Flag | Argument | Description
+--- | --- | ---
+-k, --kill | | Close all other database connections
+-c, --container | id or name | The id or name of the Docker container in which PostgreSQL is running. If omitted, then connect to the database running directly on the host.
+-h, --help | | Print a help message and exit
 
-| Argument | Required |Description |
-| --- | --- | --- |
-| host | ✓ | The remote host to connect to |
-| container | ✓ | The id or name of the Docker container in which PostgreSQL is running |
-| backup_file | | The optional file to which to save the backup data. If not specified, then the backup data will be written to stdout |
+Argument | Required |Description
+--- | --- | ---
+host | ✓ | The remote host to connect to
+backup_file | | The optional file to which to save the backup data. If not specified, then the backup data will be written to stdout
 
 
 ## Restore with [restoredockerpostgresql](./restoredockerpostgresql)
@@ -41,14 +41,14 @@ $ ./restoredockerpostgresql --kill user@example.com postgres backup.gz
 restoredockerpostgresql [--drop] [--kill] [--help] host container [backup_file]
 ```
 
-| Flag | Description |
-| --- | --- |
-| -d, --drop | Drop all non-template databases except for the one named "postgres" |
-| -k, --kill | Close all other database connections |
-| -h, --help | Print a help message and exit |
+Flag | Argument | Description
+--- | --- | ---
+-d, --drop | | Drop all non-template databases except for the one named "postgres"
+-c, --container | id or name | The id or name of the Docker container in which PostgreSQL is running. If omitted, then connect to the database running directly on the host.
+-k, --kill | | Close all other database connections
+-h, --help | | Print a help message and exit
 
-| Argument | Required |Description |
-| --- | --- | --- |
-| host | ✓ | The remote host to connect to |
-| container | ✓ | The id or name of the Docker container in which PostgreSQL is running |
-| backup_file | | The optional file from which to read the backup data. If not specified, then the backup data will be read from stdin |
+Argument | Required |Description
+--- | --- | ---
+host | ✓ | The remote host to connect to
+backup_file | | The optional file from which to read the backup data. If not specified, then the backup data will be read from stdin
