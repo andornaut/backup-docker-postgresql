@@ -4,7 +4,7 @@ Backup from and restore to PostgreSQL databases that are running in Docker conta
 
 ## Instructions
  
-[backupdockerpostgresql](./backupdockerpostgresql)
+### Backup with [backupdockerpostgresql](./backupdockerpostgresql)
 
 ```
 ./backupdockerpostgresql [--kill] [--help] host container [backup_file]
@@ -22,7 +22,7 @@ Backup from and restore to PostgreSQL databases that are running in Docker conta
 | backup_file | | The optional file to which to save the backup data. If not specified, then the backup data will be written to stdout |
 
 
-[restoredockerpostgresql](./restoredockerpostgresql) scripts.
+### Restore with [restoredockerpostgresql](./restoredockerpostgresql)
 
 ```
 ./restoredockerpostgresql [--drop] [--kill] [--help] host container [backup_file]
