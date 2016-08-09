@@ -2,11 +2,11 @@
 set -e
 
 usage() {
-    echo "$(basename $0) [--drop] [--kill] [--help] [--container <id>] host [backup_file]" >&2
+    echo "$(basename $0) [--help] [--drop] [--kill] [--host <hostname>] [--container <id>] [backup_file]" >&2
     exit 1
 }
 
-OPTS=`getopt -o dkhc: --long drop,kill,help,container: -n $(basename $0) -- "$@"`
+OPTS=`getopt -o dkh:c: --long help,drop,kill,host:,container: -n $(basename $0) -- "$@"`
 
 [[ $? -eq 0 ]] || usage
 eval set -- "$OPTS"
@@ -15,26 +15,29 @@ kill_connections=false
 
 while true; do
   case "$1" in
-    -d | --drop ) drop_databases=true; shift ;;
-    -k | --kill ) kill_connections=true; shift ;;
     -c | --container ) container=$2; shift; shift ;;
-    -h | --help ) usage; shift ;;
+    -d | --drop ) drop_databases=true; shift ;;
+    -h | --host ) host=$2; shift; shift ;;
+    -k | --kill ) kill_connections=true; shift ;;
+    --help ) usage; shift ;;
     -- ) shift; break ;;
     * ) break ;;
   esac
 done
 
-[[ $# == 1 ]] || [[ $# == 2 ]] || usage
+[[ $# -lt 2 ]] || usage
+[[ $# == 1 ]] && backup_file="${1}" || backup_file="/dev/stdin"
 
-host=${1}
-[[ $# == 2 ]] && [[ -f "${2}" ]] && backup_file="${2}" || backup_file="/dev/stdin"
-
-ssh_command="ssh ${host} -C"
 psql_command="psql -U postgres postgres"
 docker_command=""
 if [[ -n "${container}" ]]; then
     docker_command="sudo docker exec -i ${container}"
 fi
+ssh_command=""
+if [[ -n "${host}" ]]; then
+    ssh_command="ssh ${host} -C"
+fi
+
 drop_commands=$(${ssh_command} "${docker_command} ${psql_command} --tuples-only -c \"SELECT 'drop database '||datname||';'FROM pg_database WHERE datistemplate=false and datname != 'postgres';\"" </dev/null)
 
 if ${kill_connections}; then
