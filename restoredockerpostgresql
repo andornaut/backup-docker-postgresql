@@ -55,7 +55,11 @@ fi
 if ${drop_databases}; then
     while IFS=';' read -ra drop_commands_array; do
         for drop_command in "${drop_commands_array[@]}"; do
-            ${ssh_command} "${docker_command} ${psql_command} --quiet -c \"${drop_command}\"" </dev/null
+			if [[ -z ${ssh_command} ]]; then
+				${docker_command} ${psql_command} --quiet -c "${drop_command}" </dev/null
+			else
+				${ssh_command} "${docker_command} ${psql_command} --quiet -c \"${drop_command}\"" </dev/null
+			fi
         done
     done <<< "${drop_commands}"
 fi
