@@ -38,10 +38,18 @@ if [[ -n "${host}" ]]; then
     ssh_command="ssh ${host} -C"
 fi
 
-drop_commands=$(${ssh_command} "${docker_command} ${psql_command} --tuples-only -c \"SELECT 'drop database '||datname||';'FROM pg_database WHERE datistemplate=false and datname != 'postgres';\"" </dev/null)
+if [[ -z ${ssh_command} ]]; then
+	drop_commands="$(${docker_command} ${psql_command} --tuples-only -c "SELECT 'drop database '||datname||';'FROM pg_database WHERE datistemplate=false and datname != 'postgres';" </dev/null)"
+else
+	drop_commands="$(${ssh_command} "${docker_command} ${psql_command} --tuples-only -c \"SELECT 'drop database '||datname||';'FROM pg_database WHERE datistemplate=false and datname != 'postgres';\"" </dev/null)"
+fi
 
 if ${kill_connections}; then
-    ${ssh_command} "${docker_command} ${psql_command} --quiet -c \"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();\"" >/dev/null 2>&1 </dev/null
+	if [[ -z ${ssh_command} ]]; then
+		${docker_command} ${psql_command} --quiet -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();" >/dev/null 2>&1 </dev/null
+	else
+		${ssh_command} "${docker_command} ${psql_command} --quiet -c \"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();\"" >/dev/null 2>&1 </dev/null
+	fi
 fi
 
 if ${drop_databases}; then
@@ -51,6 +59,9 @@ if ${drop_databases}; then
         done
     done <<< "${drop_commands}"
 fi
-
-cat ${backup_file} | ${ssh_command} "gunzip -c - | ${docker_command} ${psql_command}"
+if [[ -z ${ssh_command} ]]; then
+	cat ${backup_file} | gunzip -c - | ${docker_command} ${psql_command}
+else
+	cat ${backup_file} | ${ssh_command} "gunzip -c - | ${docker_command} ${psql_command}"
+fi
 
