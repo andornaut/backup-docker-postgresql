@@ -38,8 +38,16 @@ psql_command="psql -U postgres postgres"
 backup_command="pg_dumpall -U postgres"
 
 if ${kill_connections}; then
-    ${ssh_command} "${docker_command} ${psql_command} --quiet -c \"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();\"" >/dev/null 2>&1
+	if [[ -z ${ssh_command} ]]; then
+		${docker_command} ${psql_command} --quiet -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();" >/dev/null 2>&1
+	else
+		${ssh_command} "${docker_command} ${psql_command} --quiet -c \"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();\"" >/dev/null 2>&1
+	fi
 fi
 
-${ssh_command} "${docker_command} ${backup_command}|gzip" > ${backup_file}
+if [[ -z ${ssh_command} ]]; then
+	${docker_command} ${backup_command}|gzip > ${backup_file}
+else
+	${ssh_command} "${docker_command} ${backup_command}|gzip" > ${backup_file}
+fi
 
