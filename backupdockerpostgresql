@@ -8,7 +8,7 @@ usage() {
 
 OPTS=`getopt -o kh:c: --long help,kill,host:,container: -n $(basename $0) -- "$@"`
 
-[[ $? -eq 0 ]] || usage
+[[ $# -eq 0 ]] || usage
 eval set -- "$OPTS"
 kill_connections=false
 

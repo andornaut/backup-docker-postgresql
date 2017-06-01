@@ -8,7 +8,7 @@ usage() {
 
 OPTS=`getopt -o dkh:c: --long help,drop,kill,host:,container: -n $(basename $0) -- "$@"`
 
-[[ $? -eq 0 ]] || usage
+[[ $# -ne 0 ]] || usage
 eval set -- "$OPTS"
 drop_databases=false
 kill_connections=false
