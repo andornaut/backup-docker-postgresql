@@ -2,11 +2,11 @@
 set -e
 
 usage() {
-    echo "$(basename $0) [--help] [--drop] [--kill] [--host <hostname>] [--container <id>] [backup_file]" >&2
+    echo "$(basename "$0") [--help] [--drop] [--kill] [--host <hostname>] [--container <id>] [backup_file]" >&2
     exit 1
 }
 
-OPTS=`getopt -o dkh:c: --long help,drop,kill,host:,container: -n $(basename $0) -- "$@"`
+OPTS=$(getopt -o dkh:c: --long help,drop,kill,host:,container: -n "$(basename "$0")" -- "$@")
 
 [[ $# -ne 0 ]] || usage
 eval set -- "$OPTS"
@@ -19,7 +19,7 @@ while true; do
     -d | --drop ) drop_databases=true; shift ;;
     -h | --host ) host=$2; shift; shift ;;
     -k | --kill ) kill_connections=true; shift ;;
-    --help ) usage; shift ;;
+    --help ) usage ;;
     -- ) shift; break ;;
     * ) break ;;
   esac
@@ -38,7 +38,11 @@ if [[ -n "${host}" ]]; then
     ssh_command="ssh ${host} -C"
 fi
 
+# The command variables above hold whole command lines and have to split into
+# words when they run, so SC2086 is disabled wherever one is expanded. Anything
+# that is a single value, a filename here, stays quoted.
 if [[ -z ${ssh_command} ]]; then
+	# shellcheck disable=SC2086
 	drop_commands="$(${docker_command} ${psql_command} --tuples-only -c "SELECT 'drop database '||datname||';'FROM pg_database WHERE datistemplate=false and datname != 'postgres';" </dev/null)"
 else
 	drop_commands="$(${ssh_command} "${docker_command} ${psql_command} --tuples-only -c \"SELECT 'drop database '||datname||';'FROM pg_database WHERE datistemplate=false and datname != 'postgres';\"" </dev/null)"
@@ -46,6 +50,7 @@ fi
 
 if ${kill_connections}; then
 	if [[ -z ${ssh_command} ]]; then
+		# shellcheck disable=SC2086
 		${docker_command} ${psql_command} --quiet -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();" >/dev/null 2>&1 </dev/null
 	else
 		${ssh_command} "${docker_command} ${psql_command} --quiet -c \"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();\"" >/dev/null 2>&1 </dev/null
@@ -56,6 +61,7 @@ if ${drop_databases}; then
     while IFS=';' read -ra drop_commands_array; do
         for drop_command in "${drop_commands_array[@]}"; do
 			if [[ -z ${ssh_command} ]]; then
+				# shellcheck disable=SC2086
 				${docker_command} ${psql_command} --quiet -c "${drop_command}" </dev/null
 			else
 				${ssh_command} "${docker_command} ${psql_command} --quiet -c \"${drop_command}\"" </dev/null
@@ -64,8 +70,8 @@ if ${drop_databases}; then
     done <<< "${drop_commands}"
 fi
 if [[ -z ${ssh_command} ]]; then
-	cat ${backup_file} | gunzip -c - | ${docker_command} ${psql_command}
+	# shellcheck disable=SC2086
+	gunzip -c - < "${backup_file}" | ${docker_command} ${psql_command}
 else
-	cat ${backup_file} | ${ssh_command} "gunzip -c - | ${docker_command} ${psql_command}"
+	${ssh_command} "gunzip -c - | ${docker_command} ${psql_command}" < "${backup_file}"
 fi
-

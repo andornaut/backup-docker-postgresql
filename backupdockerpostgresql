@@ -2,11 +2,11 @@
 set -e
 
 usage() {
-    echo "$(basename $0) [--help] [--kill] [--host <hostname>] [--container <id>] [backup_file]" >&2
+    echo "$(basename "$0") [--help] [--kill] [--host <hostname>] [--container <id>] [backup_file]" >&2
     exit 1
 }
 
-OPTS=`getopt -o kh:c: --long help,kill,host:,container: -n $(basename $0) -- "$@"`
+OPTS=$(getopt -o kh:c: --long help,kill,host:,container: -n "$(basename "$0")" -- "$@")
 
 [[ $# -ne 0 ]] || usage
 eval set -- "$OPTS"
@@ -17,7 +17,7 @@ while true; do
     -c | --container ) container=$2; shift; shift ;;
     -h | --host ) host=$2; shift; shift ;;
     -k | --kill ) kill_connections=true; shift ;;
-    --help ) usage; shift ;;
+    --help ) usage ;;
     -- ) shift; break ;;
     * ) break ;;
   esac
@@ -37,8 +37,12 @@ fi
 psql_command="psql -U postgres postgres"
 backup_command="pg_dumpall -U postgres"
 
+# The command variables above hold whole command lines and have to split into
+# words when they run, so SC2086 is disabled wherever one is expanded. Anything
+# that is a single value, a filename here, stays quoted.
 if ${kill_connections}; then
 	if [[ -z ${ssh_command} ]]; then
+		# shellcheck disable=SC2086
 		${docker_command} ${psql_command} --quiet -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();" >/dev/null 2>&1
 	else
 		${ssh_command} "${docker_command} ${psql_command} --quiet -c \"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();\"" >/dev/null 2>&1
@@ -46,8 +50,8 @@ if ${kill_connections}; then
 fi
 
 if [[ -z ${ssh_command} ]]; then
-	${docker_command} ${backup_command}|gzip > ${backup_file}
+	# shellcheck disable=SC2086
+	${docker_command} ${backup_command}|gzip > "${backup_file}"
 else
-	${ssh_command} "${docker_command} ${backup_command}|gzip" > ${backup_file}
+	${ssh_command} "${docker_command} ${backup_command}|gzip" > "${backup_file}"
 fi
-
