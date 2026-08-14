@@ -1,0 +1,3 @@
+# The dump. Both scripts take the file as an argument and the README runs them
+# from the checkout, so a database lands here rather than somewhere deliberate.
+*.gz
