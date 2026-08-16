@@ -1,3 +1,9 @@
 # The dump. Both scripts take the file as an argument and the README runs them
 # from the checkout, so a database lands here rather than somewhere deliberate.
 *.gz
+
+# AI agent instructions, local only. Named here as well as in the global
+# ignore, which a session working from a fresh clone does not have.
+AGENTS.md
+CLAUDE.md
+GEMINI.md
