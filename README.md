@@ -4,18 +4,18 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Backup from and restore to local or remote PostgreSQL databases, which are (optionally) running in Docker containers.
- 
+
 ## Backup with [backupdockerpostgresql](./backupdockerpostgresql)
 
 ### Example
 
-```
-$ ./backupdockerpostgresql --kill --host user@example.com --container postgres backup.gz
+```bash
+./backupdockerpostgresql --kill --host user@example.com --container postgres backup.gz
 ```
 
 ### Usage
 
-```
+```text
 backupdockerpostgresql [--help] [--kill] [--host <hostname>] [--container <id>] [backup_file]
 ```
 
@@ -26,22 +26,21 @@ Flag | Argument | Description
 -k, --kill | | Close all other database connections
 --help | | Print a help message and exit
 
-Argument | Required |Description
+Argument | Required | Description
 --- | --- | ---
 backup_file | no | The optional file to which to save the backup data. If not specified, then the backup data will be written to stdout
-
 
 ## Restore with [restoredockerpostgresql](./restoredockerpostgresql)
 
 ### Example
 
-```
-$ ./restoredockerpostgresql --kill --host user@example.com --container 376064e2a45e backup.gz
+```bash
+./restoredockerpostgresql --kill --host user@example.com --container 376064e2a45e backup.gz
 ```
 
 ### Usage
 
-```
+```text
 restoredockerpostgresql [--help] [--drop] [--kill] [--host <hostname>] [--container <id>] [backup_file]
 ```
 
@@ -53,7 +52,6 @@ Flag | Argument | Description
 -k, --kill | | Close all other database connections
 --help | | Print a help message and exit
 
-Argument | Required |Description
+Argument | Required | Description
 --- | --- | ---
 backup_file | no | The optional file from which to read the backup data. If not specified, then the backup data will be read from stdin
-
