@@ -55,3 +55,8 @@ Flag | Argument | Description
 Argument | Required | Description
 --- | --- | ---
 backup_file | no | The optional file from which to read the backup data. If not specified, then the backup data will be read from stdin
+
+## Development
+
+Run `make check` with Docker to check shell scripts and Markdown.
+`make check-info` lists the declared checks. No test suite or build check is declared.
